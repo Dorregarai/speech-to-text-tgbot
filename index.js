@@ -35,23 +35,32 @@ bot.on('voice', ctx => {
         request
         .get(BASE_URL_AUDIO_FILE + file_path)
         .on('error', function(err) {
+            console.log(111111);
             fs.unlink(local_file_path, function(error){})
         })
         .on('end', function(){
             let params = {
-                audio: fs.createReadStream(fileId + '.flac'),
+                audio: fs.createReadStream(fileId + '.ogg'),
                 contentType: 'audio/l16; rate=44100; endianness=little-endian',
                 model: 'es-ES_BroadbandModel'
             }
 
             speech_to_text.recognize(params, function(err, res) {
+                console.log(111111111);
                 if(err) console.log(err);
-                else ctx.reply(res.results[0].alternatives[0].transcript);
+                else {
+                    console.log(11111111);
+                    return ctx.reply(ctx.message.from.first_name + ' speaks: ', res.results[0].alternatives[0].transcript);
+                }
             })
 
             fs.unlink(local_file_path, function(error){});
-        }).pipe(fs.createWriteStream(fileId + '.flac'))
+        }).pipe(fs.createWriteStream(fileId + '.ogg'))
     })
+})
+
+bot.command('start', ctx => {
+    ctx.reply(ctx.message.from.first_name);
 })
 
 bot.launch();
